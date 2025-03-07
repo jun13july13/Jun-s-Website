@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Meme Finder</title>
+</head>
+<body>
+
+  <!-- Minimal form (no extra CSS) -->
+  <form id="sentence-form">
+    <label for="input-sentence">Tell us about your day</label><br><br>
+    <textarea
+      id="input-sentence"
+      name="input-sentence"
+      rows="4"
+      placeholder="Example: I locked my keys in my car..."
+      required
+    ></textarea><br><br>
+
+    <button type="button" id="submit-btn">GENERATE</button>
+  </form>
+
+  <div id="meme-result"></div>
+
+  <script>
+    // Replace this URL with your actual Vercel serverless endpoint if needed
+    const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
+
+    document.getElementById("submit-btn").addEventListener("click", async () => {
+      const sentenceForm = document.getElementById("sentence-form");
+      const sentenceInput = document.getElementById("input-sentence");
+      const memeResultDiv = document.getElementById("meme-result");
+
+      memeResultDiv.innerHTML = "";
+
+      const userSentence = sentenceInput.value.trim();
+      if (!userSentence) {
+        alert("Please enter something!");
+        return;
+      }
+
+      // Temporary "loading" message
+      memeResultDiv.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain"
+          },
+          body: JSON.stringify({ userSentence })
+        });
+
+        if (!response.ok) {
+          memeResultDiv.innerHTML = `<p>Request failed: ${response.status} ${response.statusText}</p>`;
+          return;
+        }
+
+        const data = await response.json();
+        if (data.error) {
+          memeResultDiv.innerHTML = `<p>Error: ${data.error.message || data.error}</p>`;
+          return;
+        }
+
+        // Hide the form upon success
+        sentenceForm.style.display = "none";
+
+        const { imageUrl } = data;
+        // Display the meme image only
+        memeResultDiv.innerHTML = `
+          <img src="${imageUrl}" alt="Meme Image">
+        `;
+      } catch (err) {
+        console.error("Error:", err);
+        memeResultDiv.innerHTML = `<p>An error occurred: ${err}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

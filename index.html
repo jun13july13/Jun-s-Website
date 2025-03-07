@@ -3,27 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <title>Meme Finder</title>
+
+  <style>
+    body, input, button, textarea, label {
+      font-family: sans-serif;
+    }
+
+    #sentence-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+      text-align: center;
+    }
+
+    #sentence-form label {
+      font-size: 1.8rem;
+    }
+
+    #input-sentence {
+      padding: 0.8rem;
+      font-size: 1rem;
+      width: 100%;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+
+    #submit-btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none; 
+    }
+
+    #meme-result {
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Minimal form (no extra CSS) -->
   <form id="sentence-form">
-    <label for="input-sentence">Tell us about your day</label><br><br>
+    <label for="input-sentence">Tell us about your day</label>
     <textarea
       id="input-sentence"
       name="input-sentence"
-      rows="4"
+      rows="6"
       placeholder="Example: I locked my keys in my car..."
       required
-    ></textarea><br><br>
+    ></textarea>
 
-    <button type="button" id="submit-btn">GENERATE</button>
+    <button type="button" id="submit-btn">
+      GENERATE
+    </button>
   </form>
 
   <div id="meme-result"></div>
 
   <script>
-    // Replace this URL with your actual Vercel serverless endpoint if needed
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
     document.getElementById("submit-btn").addEventListener("click", async () => {
@@ -32,14 +73,12 @@
       const memeResultDiv = document.getElementById("meme-result");
 
       memeResultDiv.innerHTML = "";
-
       const userSentence = sentenceInput.value.trim();
       if (!userSentence) {
         alert("Please enter something!");
         return;
       }
 
-      // Temporary "loading" message
       memeResultDiv.innerHTML = "<p>Loading...</p>";
 
       try {
@@ -62,13 +101,12 @@
           return;
         }
 
-        // Hide the form upon success
         sentenceForm.style.display = "none";
 
         const { imageUrl } = data;
-        // Display the meme image only
         memeResultDiv.innerHTML = `
-          <img src="${imageUrl}" alt="Meme Image">
+          <img src="${imageUrl}" alt="Meme Image" 
+               style="max-width: 500px; border: 1px solid #ccc; border-radius: 8px; margin-top: 1rem;">
         `;
       } catch (err) {
         console.error("Error:", err);
@@ -76,5 +114,6 @@
       }
     });
   </script>
+
 </body>
 </html>

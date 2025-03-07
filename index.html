@@ -32,7 +32,7 @@
     }
 
     .wrapper {
-      text-align: left;
+      text-align: center;
       width: 100%;
       max-width: 600px; /* big container so we can have a wide text area */
       margin: 0 auto;
@@ -61,9 +61,11 @@
       padding: 0.5rem;
       font-size: 1rem;
       line-height: 1.2rem;
-      text-align: left; 
+      text-align: left; /* 내부 텍스트는 왼쪽 정렬 */
       resize: none;
+      margin: 0 auto; /* 이 부분이 중요 */
     }
+
 
     #input-sentence::placeholder {
       font-size: 1rem;

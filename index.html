@@ -4,27 +4,68 @@
   <meta charset="UTF-8">
   <title>Meme Finder</title>
   <style>
+    /* Container to center everything both horizontally and vertically */
     .container {
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* A simple wrapper for the form */
+    .wrapper {
+      text-align: center;
+    }
+
+    /* Label (header) with larger font */
+    #sentence-form label {
+      display: block;
+      font-size: 1.5rem; /* biggest but not huge */
+      margin-bottom: 1rem;
+    }
+
+    /* Single-row input form (textarea) with bigger placeholder text */
+    #input-sentence {
+      display: block;
+      width: 450px;       /* longer horizontally */
+      height: 40px;       /* just one row high */
+      box-sizing: border-box;
+      line-height: 40px;  /* vertically center the text inside */
+      font-size: 1.5rem;  /* matches label size for typed text */
+      text-align: center; /* horizontally center typed text */
+      resize: none;
+    }
+
+    /* Placeholder styling (bigger font, vertically aligned) */
+    #input-sentence::placeholder {
+      font-size: 1.5rem; 
+      text-align: center;
+    }
+
+    #submit-btn {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    #meme-result {
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div>
+    <div class="wrapper">
       <form id="sentence-form">
-        <label for="input-sentence">Tell us about your day</label><br><br>
+        <label for="input-sentence">Tell us about your day</label>
         <textarea
           id="input-sentence"
           name="input-sentence"
-          rows="2"
-          cols="40"
           placeholder="Example: I locked my keys in my car..."
           required
-        ></textarea><br><br>
+        ></textarea>
         <button type="button" id="submit-btn">GENERATE</button>
       </form>
       <div id="meme-result"></div>

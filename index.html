@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Meme Finder</title>
   <style>
-    /* Container to center everything both horizontally and vertically */
     .container {
       display: flex;
       align-items: center;
@@ -14,33 +13,29 @@
       padding: 0;
     }
 
-    /* A simple wrapper for the form */
     .wrapper {
       text-align: center;
     }
 
-    /* Label (header) with larger font */
     #sentence-form label {
       display: block;
-      font-size: 1.5rem; /* biggest but not huge */
+      font-size: 1.5rem;
       margin-bottom: 1rem;
     }
 
-    /* Single-row input form (textarea) with bigger placeholder text */
     #input-sentence {
       display: block;
-      width: 600px;       /* longer horizontally */
-      height: 50px;       /* just one row high */
+      width: 600px;       
+      height: 40px;       
       box-sizing: border-box;
-      line-height: 40px;  /* vertically center the text inside */
-      font-size: 1.2rem;  /* matches label size for typed text */
-      text-align: left; /* horizontally center typed text */
+      line-height: 40px;  
+      font-size: 1.0rem;  
+      text-align: left; 
       resize: none;
     }
 
-    /* Placeholder styling (bigger font, vertically aligned) */
     #input-sentence::placeholder {
-      font-size: 1.2rem; 
+      font-size: 1.0rem; 
       text-align: left;
     }
 
@@ -59,11 +54,11 @@
   <div class="container">
     <div class="wrapper">
       <form id="sentence-form">
-        <label for="input-sentence">Tell us about your day</label>
+        <label for="input-sentence">Tell us about your day!</label>
         <textarea
           id="input-sentence"
           name="input-sentence"
-          placeholder="Example: I locked my keys in my car..."
+          placeholder="Ex: I locked my keys in my car..."
           required
         ></textarea>
         <button type="button" id="submit-btn">GENERATE</button>

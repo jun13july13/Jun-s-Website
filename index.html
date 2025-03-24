@@ -2,232 +2,267 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Meme Finder - Comment Style</title>
+  <title>Meme Generator</title>
   <style>
-    /* 전체 레이아웃 */
-    * {
-      box-sizing: border-box;
-      margin: 0; 
+    /* 전체 레이아웃/폰트 - 기존 코드와 유사한 느낌 */
+    html, body {
+      margin: 0;
       padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    body {
       width: 100%;
-      min-height: 100vh;
+      min-height: 100vh; 
+      font-family: sans-serif;
+      background: #fff;
     }
+
+    /* 컨테이너: 가운데 정렬, 위에서 30vh 정도 내려옴 */
     .container {
-      width: 90%;
-      max-width: 800px;
-      margin: 2rem auto; /* 화면 가운데 */
+      display: flex;
+      justify-content: center; 
+      align-items: flex-start; 
+      padding-top: 30vh;
+      box-sizing: border-box;
     }
 
-    /* 제목 */
-    .title {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
+    /* 중심 래퍼 */
+    .wrapper {
       text-align: center;
+      width: 100%;
+      max-width: 600px; 
+      margin: 0 auto;
     }
 
-    /* 댓글 스타일 영역 (한 줄) */
+    /* 라벨 스타일 */
+    #sentence-form label {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 1.8rem;
+    }
+
+    /* 댓글 영역: 프로필 왼, 오른쪽에 닉네임+글 */
     .comment-row {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      align-items: flex-start;
+      gap: 1rem;
+      justify-content: center; /* 가운데 정렬 */
+      margin-bottom: 1.6rem;
     }
 
-    /* 드롭다운 삼각형 버튼 */
-    .triangle-btn {
+    /* 프로필+드롭다운 컨테이너 */
+    .profile-area {
+      position: relative; 
+    }
+
+    /* 프로필 이미지(더 크게) */
+    .profile-img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    /* 드롭다운 버튼 (역삼각형) - 이미지에 겹쳐서 오른쪽 아래나 위에 배치 가능 */
+    #char-dropdown-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
       background: none;
       border: none;
       font-size: 1.2rem;
       cursor: pointer;
+      transform: translate(20%, -20%);
     }
 
-    /* 프로필 이미지 */
-    .profile-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    /* 닉네임 input */
-    .nickname-input {
-      width: 120px;
-      padding: 0.3rem;
-    }
-
-    /* 댓글 내용 textarea */
-    .comment-box {
-      flex: 1;
-      height: 40px; 
-      resize: none;
-      padding: 0.3rem;
-    }
-
-    /* 전송 버튼 */
-    .send-btn {
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.4rem 0.8rem;
-      border: 1px solid #999;
-      background: none;
-    }
-
-    /* 드롭다운 메뉴 */
+    /* 드롭다운 메뉴 - 이미지들 표시 */
     .dropdown-menu {
       position: absolute;
-      margin-top: 0.5rem;
-      padding: 0.5rem;
+      top: 70px; /* 프로필 아래로 약간 */
+      left: 0;
       border: 1px solid #ccc;
       background: #fff;
-      display: none; /* 기본 hidden */
+      display: none;
+      padding: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .dropdown-menu.active {
       display: block;
     }
+    /* 이미지 옵션들 */
     .char-option {
-      padding: 0.3rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0.3rem;
       cursor: pointer;
     }
     .char-option:hover {
-      background: #eee;
+      outline: 2px solid #333;
     }
 
-    /* 밈 결과 */
+    /* 오른쪽에 닉네임+글 */
+    .comment-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      width: 100%;
+    }
+
+    /* 닉네임 */
+    .nickname-input {
+      width: 100%;
+      height: 30px;
+      font-size: 1rem;
+      padding: 0.4rem;
+      box-sizing: border-box;
+    }
+
+    /* 글 작성칸(placeholder “Ex: I locked my keys...”), 한 줄~두 줄 */
+    .comment-box {
+      width: 100%;
+      height: 40px; 
+      resize: none;
+      font-size: 1rem;
+      padding: 0.5rem;
+      box-sizing: border-box;
+    }
+    .comment-box::placeholder {
+      font-size: 1rem;
+    }
+
+    /* Generate 버튼 */
+    #submit-btn {
+      font-size: 0.9rem;
+      margin-top: 1.0rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+    }
+
+    /* 기존 밈 결과 */
     #meme-result {
-      margin-top: 2rem;
-      text-align: center;
+      margin-top: 0.4rem;
     }
   </style>
 </head>
+
 <body>
-
   <div class="container">
-    <h2 class="title">Tell us about your day!</h2>
+    <div class="wrapper">
+      <form id="sentence-form">
+        <label>Tell us about your day!</label>
 
-    <div class="comment-row">
-      <!-- (1) 역삼각형 버튼 -->
-      <button id="char-dropdown-btn" class="triangle-btn">&#9660;</button>
+        <!-- 댓글 스타일 row -->
+        <div class="comment-row">
+          <!-- 왼쪽: 프로필 -->
+          <div class="profile-area">
+            <!-- 기본 char1.png -->
+            <img id="profile-img" src="images/char1.png" alt="Profile Image" class="profile-img">
+            <!-- 역삼각형 버튼 -->
+            <button type="button" id="char-dropdown-btn">&#9660;</button>
+            
+            <!-- 드롭다운 메뉴 (이미지 3개) -->
+            <div id="char-dropdown-menu" class="dropdown-menu">
+              <img src="images/char1.png" class="char-option" data-img="images/pepe.jpg" alt="char1">
+              <img src="images/char2.png" class="char-option" data-img="images/cheems.jpg" alt="char2">
+              <img src="images/char3.png" class="char-option" data-img="images/wojak.jpg" alt="char3">
+            </div>
+          </div>
 
-      <!-- (2) 프로필 이미지 (초기 char1.png) -->
-      <img id="profile-img" src="images/char1.png" alt="Profile" class="profile-img">
+          <!-- 오른쪽: 닉네임 + 글 작성 -->
+          <div class="comment-right">
+            <input type="text" id="nickname" class="nickname-input" placeholder="Nickname">
+            <textarea id="input-sentence" class="comment-box" placeholder="Ex: I locked my keys in my car..." required></textarea>
+          </div>
+        </div>
 
-      <!-- (3) 닉네임 칸 -->
-      <input type="text" id="nickname" class="nickname-input" placeholder="Nickname">
+        <!-- Generate 버튼 -->
+        <button type="button" id="submit-btn">GENERATE</button>
+      </form>
 
-      <!-- (4) 글 작성 칸 -->
-      <textarea id="comment-text" class="comment-box" placeholder="Write a comment..."></textarea>
-
-      <!-- (5) 전송 버튼 -->
-      <button id="send-btn" class="send-btn">Send</button>
+      <div id="meme-result"></div>
     </div>
-
-    <!-- 캐릭터 선택 드롭다운 -->
-    <div id="char-dropdown-menu" class="dropdown-menu">
-      <!-- data-img 속성에 실제 이미지 경로 -->
-      <div class="char-option" data-img="images/pepe.jpg">캐릭터1</div>
-      <div class="char-option" data-img="images/cheems.jpg">캐릭터2</div>
-      <div class="char-option" data-img="images/wojak.jpg">캐릭터3</div>
-    </div>
-
-    <div id="meme-result"></div>
   </div>
 
   <script>
-    /*
-      1) 서버리스 함수 (GPT+구글밈) 주소
-         기존에 잘 동작하던 Endpoint 로 교체하세요!
-    */
+    /* 서버리스 함수 URL (OpenAI + 구글 밈) */
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
+    const sentenceForm = document.getElementById("sentence-form");
+    const profileImg = document.getElementById("profile-img");
     const charDropdownBtn = document.getElementById("char-dropdown-btn");
     const charDropdownMenu = document.getElementById("char-dropdown-menu");
     const charOptions = document.querySelectorAll(".char-option");
-    const profileImg = document.getElementById("profile-img");
 
     const nicknameInput = document.getElementById("nickname");
-    const commentText = document.getElementById("comment-text");
-    const sendBtn = document.getElementById("send-btn");
-
+    const sentenceInput = document.getElementById("input-sentence");
+    const submitBtn = document.getElementById("submit-btn");
     const memeResultDiv = document.getElementById("meme-result");
 
-    // 드롭다운 버튼 -> 메뉴 토글
+    // 드롭다운 토글
     charDropdownBtn.addEventListener("click", () => {
-      if (charDropdownMenu.classList.contains("active")) {
+      if(charDropdownMenu.classList.contains("active")){
         charDropdownMenu.classList.remove("active");
       } else {
-        // 위치 조정(화면에 따라)
-        // charDropdownMenu.style.left = ... 
-        // charDropdownMenu.style.top = ...
         charDropdownMenu.classList.add("active");
       }
     });
 
-    // 캐릭터 선택 -> 프로필 이미지를 바꿈
+    // 캐릭터 선택 시 프로필 이미지 변경
     charOptions.forEach(option => {
       option.addEventListener("click", () => {
-        const imgUrl = option.getAttribute("data-img");
-        profileImg.src = imgUrl;
+        const newImg = option.getAttribute("data-img");
+        profileImg.src = newImg;
         charDropdownMenu.classList.remove("active");
       });
     });
 
-    // Send 버튼 -> 기존 GPT+구글밈 로직
-    sendBtn.addEventListener("click", generateMeme);
-
-    // 엔터키로도 전송 가능
-    commentText.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
+    // Enter 치면 generate
+    sentenceInput.addEventListener("keydown", e => {
+      if(e.key === "Enter"){
         e.preventDefault();
         generateMeme();
       }
     });
 
-    async function generateMeme() {
-      memeResultDiv.innerHTML = "";
+    // 클릭하면 generate
+    submitBtn.addEventListener("click", generateMeme);
 
-      const nickname = nicknameInput.value.trim();
-      const comment = commentText.value.trim();
-      if (!comment) {
-        alert("Please write a comment!");
+    async function generateMeme(){
+      memeResultDiv.innerHTML = "";
+      const userSentence = sentenceInput.value.trim();
+      if(!userSentence){
+        alert("Please enter something!");
         return;
       }
 
-      // 기존 문장 + 닉네임
-      // 예: "nickname said: comment"
-      const userSentence = nickname 
-        ? `${nickname} said: ${comment}`
-        : comment;
+      // 닉네임 붙여서 보낼 수도 있음
+      const nickname = nicknameInput.value.trim();
+      let finalText = userSentence;
+      if(nickname) {
+        finalText = `${nickname} said: ${userSentence}`;
+      }
 
       memeResultDiv.innerHTML = "<p>Loading...</p>";
-
       try {
         const response = await fetch(BACKEND_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "text/plain"
-          },
-          body: JSON.stringify({ userSentence })
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ userSentence: finalText })
         });
-
-        if (!response.ok) {
+        if(!response.ok){
           memeResultDiv.innerHTML = `<p>Request failed: ${response.status} ${response.statusText}</p>`;
           return;
         }
-
         const data = await response.json();
-        if (data.error) {
+        if(data.error){
           memeResultDiv.innerHTML = `<p>Error: ${data.error.message || data.error}</p>`;
           return;
         }
-
-        // 예: data.imageUrl 에 구글 밈 이미지 주소
-        // 그대로 표시
-        memeResultDiv.innerHTML = `
-          <img src="${data.imageUrl}" alt="Meme Image" style="max-width: 400px; border:1px solid #ccc;">
-        `;
-      } catch (err) {
+        // 밈 이미지 표시
+        const { imageUrl } = data;
+        sentenceForm.style.display = "none";
+        memeResultDiv.innerHTML = `<img src="${imageUrl}" alt="Meme Image" style="max-width:400px;">`;
+      } catch(err){
         memeResultDiv.innerHTML = `<p>An error occurred: ${err}</p>`;
       }
     }

@@ -2,128 +2,231 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Meme Generator</title>
+  <title>Meme Finder - Comment Style</title>
   <style>
-    
-    html, body {
-      margin: 0;
+    /* 전체 레이아웃 */
+    * {
+      box-sizing: border-box;
+      margin: 0; 
       padding: 0;
-      width: 100%;
-      min-height: 100vh; 
-      font-family: sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
-
+    body {
+      width: 100%;
+      min-height: 100vh;
+    }
     .container {
-      display: flex;
-      justify-content: center; 
-      align-items: flex-start; 
-      padding-top: 30vh;     
-      box-sizing: border-box;
+      width: 90%;
+      max-width: 800px;
+      margin: 2rem auto; /* 화면 가운데 */
     }
 
-    .wrapper {
+    /* 제목 */
+    .title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
       text-align: center;
-      width: 100%;
-      max-width: 600px; 
-      margin: 0 auto;
     }
 
-    #sentence-form label {
-      display: block;
-      font-size: 1.8rem; 
-      margin-bottom: 1.8rem;
+    /* 댓글 스타일 영역 (한 줄) */
+    .comment-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    #input-sentence {
-      display: block;
-      width: 60vw;    
-      max-width: 600px; 
-      height: 40px;
-      box-sizing: border-box;
-      padding: 0.5rem;
-      font-size: 1rem;
-      line-height: 1.2rem;
-      text-align: left; 
-      resize: none;
-      margin: 0 auto;
-    }
-
-
-    #input-sentence::placeholder {
-      font-size: 1rem;
-      text-align: left;
-    }
-
-    #submit-btn {
-      font-size: 0.9rem;
-      margin-top: 1.6rem;
+    /* 드롭다운 삼각형 버튼 */
+    .triangle-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
       cursor: pointer;
     }
 
+    /* 프로필 이미지 */
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* 닉네임 input */
+    .nickname-input {
+      width: 120px;
+      padding: 0.3rem;
+    }
+
+    /* 댓글 내용 textarea */
+    .comment-box {
+      flex: 1;
+      height: 40px; 
+      resize: none;
+      padding: 0.3rem;
+    }
+
+    /* 전송 버튼 */
+    .send-btn {
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #999;
+      background: none;
+    }
+
+    /* 드롭다운 메뉴 */
+    .dropdown-menu {
+      position: absolute;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      background: #fff;
+      display: none; /* 기본 hidden */
+    }
+    .dropdown-menu.active {
+      display: block;
+    }
+    .char-option {
+      padding: 0.3rem;
+      cursor: pointer;
+    }
+    .char-option:hover {
+      background: #eee;
+    }
+
+    /* 밈 결과 */
     #meme-result {
-      margin-top: 0.4rem;
+      margin-top: 2rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <div class="wrapper">
-      <form id="sentence-form">
-        <label for="input-sentence">Tell us about your day!</label>
-        <textarea
-          id="input-sentence"
-          name="input-sentence"
-          placeholder="Ex: I locked my keys in my car..."
-          required
-        ></textarea>
-        <button type="button" id="submit-btn">GENERATE</button>
-      </form>
-      <div id="meme-result"></div>
+    <h2 class="title">Tell us about your day!</h2>
+
+    <div class="comment-row">
+      <!-- (1) 역삼각형 버튼 -->
+      <button id="char-dropdown-btn" class="triangle-btn">&#9660;</button>
+
+      <!-- (2) 프로필 이미지 (초기 char1.png) -->
+      <img id="profile-img" src="images/char1.png" alt="Profile" class="profile-img">
+
+      <!-- (3) 닉네임 칸 -->
+      <input type="text" id="nickname" class="nickname-input" placeholder="Nickname">
+
+      <!-- (4) 글 작성 칸 -->
+      <textarea id="comment-text" class="comment-box" placeholder="Write a comment..."></textarea>
+
+      <!-- (5) 전송 버튼 -->
+      <button id="send-btn" class="send-btn">Send</button>
     </div>
+
+    <!-- 캐릭터 선택 드롭다운 -->
+    <div id="char-dropdown-menu" class="dropdown-menu">
+      <!-- data-img 속성에 실제 이미지 경로 -->
+      <div class="char-option" data-img="images/pepe.jpg">캐릭터1</div>
+      <div class="char-option" data-img="images/cheems.jpg">캐릭터2</div>
+      <div class="char-option" data-img="images/wojak.jpg">캐릭터3</div>
+    </div>
+
+    <div id="meme-result"></div>
   </div>
 
   <script>
+    /*
+      1) 서버리스 함수 (GPT+구글밈) 주소
+         기존에 잘 동작하던 Endpoint 로 교체하세요!
+    */
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
-    const sentenceForm = document.getElementById("sentence-form");
-    const sentenceInput = document.getElementById("input-sentence");
+    const charDropdownBtn = document.getElementById("char-dropdown-btn");
+    const charDropdownMenu = document.getElementById("char-dropdown-menu");
+    const charOptions = document.querySelectorAll(".char-option");
+    const profileImg = document.getElementById("profile-img");
+
+    const nicknameInput = document.getElementById("nickname");
+    const commentText = document.getElementById("comment-text");
+    const sendBtn = document.getElementById("send-btn");
+
     const memeResultDiv = document.getElementById("meme-result");
 
-    sentenceInput.addEventListener("keydown", (e) => {
+    // 드롭다운 버튼 -> 메뉴 토글
+    charDropdownBtn.addEventListener("click", () => {
+      if (charDropdownMenu.classList.contains("active")) {
+        charDropdownMenu.classList.remove("active");
+      } else {
+        // 위치 조정(화면에 따라)
+        // charDropdownMenu.style.left = ... 
+        // charDropdownMenu.style.top = ...
+        charDropdownMenu.classList.add("active");
+      }
+    });
+
+    // 캐릭터 선택 -> 프로필 이미지를 바꿈
+    charOptions.forEach(option => {
+      option.addEventListener("click", () => {
+        const imgUrl = option.getAttribute("data-img");
+        profileImg.src = imgUrl;
+        charDropdownMenu.classList.remove("active");
+      });
+    });
+
+    // Send 버튼 -> 기존 GPT+구글밈 로직
+    sendBtn.addEventListener("click", generateMeme);
+
+    // 엔터키로도 전송 가능
+    commentText.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         generateMeme();
       }
     });
 
-    document.getElementById("submit-btn").addEventListener("click", generateMeme);
-
     async function generateMeme() {
       memeResultDiv.innerHTML = "";
-      const userSentence = sentenceInput.value.trim();
-      if (!userSentence) {
-        alert("Please enter something!");
+
+      const nickname = nicknameInput.value.trim();
+      const comment = commentText.value.trim();
+      if (!comment) {
+        alert("Please write a comment!");
         return;
       }
+
+      // 기존 문장 + 닉네임
+      // 예: "nickname said: comment"
+      const userSentence = nickname 
+        ? `${nickname} said: ${comment}`
+        : comment;
+
       memeResultDiv.innerHTML = "<p>Loading...</p>";
+
       try {
         const response = await fetch(BACKEND_URL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain" },
+          headers: {
+            "Content-Type": "text/plain"
+          },
           body: JSON.stringify({ userSentence })
         });
+
         if (!response.ok) {
           memeResultDiv.innerHTML = `<p>Request failed: ${response.status} ${response.statusText}</p>`;
           return;
         }
+
         const data = await response.json();
         if (data.error) {
           memeResultDiv.innerHTML = `<p>Error: ${data.error.message || data.error}</p>`;
           return;
         }
-        sentenceForm.style.display = "none";
-        const { imageUrl } = data;
-        memeResultDiv.innerHTML = `<img src="${imageUrl}" alt="Meme Image" style="max-width: 400px;">`;
+
+        // 예: data.imageUrl 에 구글 밈 이미지 주소
+        // 그대로 표시
+        memeResultDiv.innerHTML = `
+          <img src="${data.imageUrl}" alt="Meme Image" style="max-width: 400px; border:1px solid #ccc;">
+        `;
       } catch (err) {
         memeResultDiv.innerHTML = `<p>An error occurred: ${err}</p>`;
       }

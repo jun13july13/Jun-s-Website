@@ -17,7 +17,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 30vh; /* 화면 위에서 30% 정도 아래에 위치 */
+      padding-top: 30vh;
       box-sizing: border-box;
     }
     .wrapper {
@@ -34,7 +34,7 @@
       margin-bottom: 1.8rem;
     }
 
-    /* 댓글 한 줄: 프로필 + 글작성칸 + 전송 버튼 */
+    /* 댓글 한 줄: 프로필 + 글작성 + 전송 버튼 */
     .comment-row {
       display: flex;
       align-items: center;
@@ -48,16 +48,16 @@
       position: relative;
     }
 
-    /* 프로필 이미지 (기본 pepe.jpg) */
+    /* 프로필 이미지 크기 키움 (80x80) */
     .profile-img {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       object-fit: cover;
       cursor: pointer;
     }
 
-    /* 역삼각형 버튼 (드롭다운) */
+    /* 드롭다운 버튼 (역삼각형) */
     #char-dropdown-btn {
       position: absolute;
       bottom: 0;
@@ -69,10 +69,10 @@
       transform: translate(20%, -20%);
     }
 
-    /* 드롭다운 메뉴 (이미지들) */
+    /* 드롭다운 메뉴 */
     .dropdown-menu {
       position: absolute;
-      top: 70px;
+      top: 90px;
       left: 0;
       border: 1px solid #ccc;
       background: #fff;
@@ -83,11 +83,9 @@
     .dropdown-menu.active {
       display: block;
     }
-
-    /* 이미지 옵션 (char-option) */
     .char-option {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
       object-fit: cover;
       margin: 0.3rem;
@@ -97,29 +95,33 @@
       outline: 2px solid #333;
     }
 
-    /* 글 작성칸 */
+    /* 입력 박스(글 작성칸) */
     .comment-box {
       flex: 1;
-      height: 40px;
+      height: 50px;
       resize: none;
       font-size: 1rem;
       padding: 0.5rem;
       box-sizing: border-box;
       text-align: left;
+      border: 1px solid #ccc;
+      border-radius: 8px; /* 모서리 라운딩 */
     }
     .comment-box::placeholder {
       font-size: 1rem;
     }
 
-    /* 전송 버튼(화살표) */
+    /* 전송 버튼(Apple 파란색 느낌) */
     #submit-btn {
       font-size: 1.4rem;
       margin-top: 0;
       cursor: pointer;
-      background: none;
-      border: 1px solid #999;
-      padding: 0.2rem 0.6rem;
+      background: #007aff; /* 애플 느낌 파랑 */
+      color: #fff;
+      border: none;
+      padding: 0.4rem 0.8rem;
       line-height: 1;
+      border-radius: 16px; /* 둥근 모서리 */
     }
 
     /* 밈 결과 */
@@ -136,7 +138,6 @@
         <label>Tell us about your day!</label>
 
         <div class="comment-row">
-          <!-- 프로필 + 드롭다운 -->
           <div class="profile-area">
             <!-- 기본: pepe.jpg -->
             <img id="profile-img" 
@@ -145,16 +146,14 @@
                  class="profile-img">
             <button type="button" id="char-dropdown-btn">&#9660;</button>
 
-            <!-- 드롭다운: cheems, wojak, pepe -->
+            <!-- 드롭다운 -->
             <div id="char-dropdown-menu" class="dropdown-menu">
-              <!-- 이미지로만 표시 (텍스트 없음) -->
-              <img src="images/pepe.jpg" class="char-option" data-img="images/pepe.jpg" alt="pepe">
+              <img src="images/pepe.jpg"   class="char-option" data-img="images/pepe.jpg" alt="pepe">
               <img src="images/cheems.jpg" class="char-option" data-img="images/cheems.jpg" alt="cheems">
-              <img src="images/wojak.jpg" class="char-option" data-img="images/wojak.jpg" alt="wojak">
+              <img src="images/wojak.jpg"  class="char-option" data-img="images/wojak.jpg" alt="wojak">
             </div>
           </div>
 
-          <!-- 글 작성칸 -->
           <textarea 
             id="input-sentence" 
             class="comment-box" 
@@ -162,7 +161,6 @@
             required
           ></textarea>
 
-          <!-- 전송 버튼(위 화살표) -->
           <button type="button" id="submit-btn">&#8593;</button>
         </div>
       </form>
@@ -172,7 +170,7 @@
   </div>
 
   <script>
-    /* 서버리스 함수 URL (GPT+구글밈) */
+    /* Vercel 서버리스 함수 */
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
     const sentenceForm = document.getElementById("sentence-form");
@@ -184,12 +182,12 @@
     const submitBtn = document.getElementById("submit-btn");
     const memeResultDiv = document.getElementById("meme-result");
 
-    // 드롭다운 열고 닫기
+    // 드롭다운 토글
     charDropdownBtn.addEventListener("click", () => {
       charDropdownMenu.classList.toggle("active");
     });
 
-    // 캐릭터 선택 -> 프로필 교체
+    // 캐릭터 선택 -> 프로필 변경
     charOptions.forEach(option => {
       option.addEventListener("click", () => {
         const newImg = option.getAttribute("data-img");
@@ -199,7 +197,7 @@
     });
 
     // Enter -> 전송
-    sentenceInput.addEventListener("keydown", e => {
+    sentenceInput.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
         e.preventDefault();
         generateMeme();
@@ -234,8 +232,9 @@
           return;
         }
 
-        sentenceForm.style.display = "none";
+        // 밈 이미지 표시
         const { imageUrl } = data;
+        sentenceForm.style.display = "none";
         memeResultDiv.innerHTML = `<img src="${imageUrl}" alt="Meme Image" style="max-width:400px;">`;
       } catch(err){
         memeResultDiv.innerHTML = `<p>An error occurred: ${err}</p>`;

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Meme Generator</title>
   <style>
+    /* 전체 화면 레이아웃 */
     html, body {
       margin: 0;
       padding: 0;
@@ -16,7 +17,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 30vh;
+      padding-top: 30vh; /* 화면 위에서 30% 정도 아래에 위치 */
       box-sizing: border-box;
     }
     .wrapper {
@@ -25,11 +26,15 @@
       max-width: 600px;
       margin: 0 auto;
     }
+
+    /* 라벨 (Tell us about your day!) */
     #sentence-form label {
       display: block;
       font-size: 1.8rem;
       margin-bottom: 1.8rem;
     }
+
+    /* 댓글 한 줄: 프로필 + 글작성칸 + 전송 버튼 */
     .comment-row {
       display: flex;
       align-items: center;
@@ -37,10 +42,13 @@
       justify-content: center;
       margin-bottom: 1.6rem;
     }
+
+    /* 프로필 + 드롭다운 */
     .profile-area {
-      position: relative; 
+      position: relative;
     }
-    /* 기본 프로필: 절대경로(레포이름 붙이기) */
+
+    /* 프로필 이미지 (기본 pepe.jpg) */
     .profile-img {
       width: 60px;
       height: 60px;
@@ -48,6 +56,8 @@
       object-fit: cover;
       cursor: pointer;
     }
+
+    /* 역삼각형 버튼 (드롭다운) */
     #char-dropdown-btn {
       position: absolute;
       bottom: 0;
@@ -58,6 +68,8 @@
       cursor: pointer;
       transform: translate(20%, -20%);
     }
+
+    /* 드롭다운 메뉴 (이미지들) */
     .dropdown-menu {
       position: absolute;
       top: 70px;
@@ -71,6 +83,8 @@
     .dropdown-menu.active {
       display: block;
     }
+
+    /* 이미지 옵션 (char-option) */
     .char-option {
       width: 60px;
       height: 60px;
@@ -82,6 +96,8 @@
     .char-option:hover {
       outline: 2px solid #333;
     }
+
+    /* 글 작성칸 */
     .comment-box {
       flex: 1;
       height: 40px;
@@ -94,6 +110,8 @@
     .comment-box::placeholder {
       font-size: 1rem;
     }
+
+    /* 전송 버튼(화살표) */
     #submit-btn {
       font-size: 1.4rem;
       margin-top: 0;
@@ -103,37 +121,48 @@
       padding: 0.2rem 0.6rem;
       line-height: 1;
     }
+
+    /* 밈 결과 */
     #meme-result {
       margin-top: 0.4rem;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
     <div class="wrapper">
       <form id="sentence-form">
         <label>Tell us about your day!</label>
+
         <div class="comment-row">
+          <!-- 프로필 + 드롭다운 -->
           <div class="profile-area">
-            <!-- 1) 첫 번째 캐릭터 절대경로: '/Jun-s-Website/images/char1.png' -->
-            <img id="profile-img"
-                 src="/Jun-s-Website/images/pepe.jpg"
-                 alt="Profile Image"
+            <!-- 기본: pepe.jpg -->
+            <img id="profile-img" 
+                 src="images/pepe.jpg" 
+                 alt="Profile Image" 
                  class="profile-img">
             <button type="button" id="char-dropdown-btn">&#9660;</button>
+
+            <!-- 드롭다운: cheems, wojak, pepe -->
             <div id="char-dropdown-menu" class="dropdown-menu">
-              <!-- 2) 드롭다운 옵션도 절대경로로 바꿔봄 -->
-              <img src="/Jun-s-Website/images/char1.png" class="char-option" data-img="/Jun-s-Website/images/pepe.jpg" alt="char1">
-              <img src="/Jun-s-Website/images/char2.png" class="char-option" data-img="/Jun-s-Website/images/cheems.jpg" alt="char2">
-              <img src="/Jun-s-Website/images/char3.png" class="char-option" data-img="/Jun-s-Website/images/wojak.jpg" alt="char3">
+              <!-- 이미지로만 표시 (텍스트 없음) -->
+              <img src="images/pepe.jpg" class="char-option" data-img="images/pepe.jpg" alt="pepe">
+              <img src="images/cheems.jpg" class="char-option" data-img="images/cheems.jpg" alt="cheems">
+              <img src="images/wojak.jpg" class="char-option" data-img="images/wojak.jpg" alt="wojak">
             </div>
           </div>
+
+          <!-- 글 작성칸 -->
           <textarea 
             id="input-sentence" 
             class="comment-box" 
             placeholder="Ex: I locked my keys in my car..." 
             required
           ></textarea>
+
+          <!-- 전송 버튼(위 화살표) -->
           <button type="button" id="submit-btn">&#8593;</button>
         </div>
       </form>
@@ -143,6 +172,7 @@
   </div>
 
   <script>
+    /* 서버리스 함수 URL (GPT+구글밈) */
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
     const sentenceForm = document.getElementById("sentence-form");
@@ -154,10 +184,12 @@
     const submitBtn = document.getElementById("submit-btn");
     const memeResultDiv = document.getElementById("meme-result");
 
+    // 드롭다운 열고 닫기
     charDropdownBtn.addEventListener("click", () => {
       charDropdownMenu.classList.toggle("active");
     });
 
+    // 캐릭터 선택 -> 프로필 교체
     charOptions.forEach(option => {
       option.addEventListener("click", () => {
         const newImg = option.getAttribute("data-img");
@@ -166,6 +198,7 @@
       });
     });
 
+    // Enter -> 전송
     sentenceInput.addEventListener("keydown", e => {
       if(e.key === "Enter"){
         e.preventDefault();
@@ -173,6 +206,7 @@
       }
     });
 
+    // 버튼 클릭 -> 전송
     submitBtn.addEventListener("click", generateMeme);
 
     async function generateMeme(){
@@ -190,7 +224,6 @@
           headers: { "Content-Type": "text/plain" },
           body: JSON.stringify({ userSentence })
         });
-
         if(!response.ok){
           memeResultDiv.innerHTML = `<p>Request failed: ${response.status} ${response.statusText}</p>`;
           return;

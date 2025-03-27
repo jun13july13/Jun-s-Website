@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Meme Generator</title>
   <style>
-    /* 전체 화면 레이아웃 */
     html, body {
       margin: 0;
       padding: 0;
@@ -27,14 +26,12 @@
       margin: 0 auto;
     }
 
-    /* 라벨 (Tell us about your day!) */
     #sentence-form label {
       display: block;
       font-size: 1.8rem;
       margin-bottom: 1.8rem;
     }
 
-    /* 댓글 한 줄: 프로필 + 글작성 + 전송 버튼 */
     .comment-row {
       display: flex;
       align-items: center;
@@ -43,12 +40,10 @@
       margin-bottom: 1.6rem;
     }
 
-    /* 프로필 + 드롭다운 */
     .profile-area {
       position: relative;
     }
 
-    /* 프로필 이미지 크기 키움 (80x80) */
     .profile-img {
       width: 80px;
       height: 80px;
@@ -57,7 +52,6 @@
       cursor: pointer;
     }
 
-    /* 드롭다운 버튼 (역삼각형) */
     #char-dropdown-btn {
       position: absolute;
       bottom: 0;
@@ -69,7 +63,6 @@
       transform: translate(20%, -20%);
     }
 
-    /* 드롭다운 메뉴 */
     .dropdown-menu {
       position: absolute;
       top: 90px;
@@ -95,7 +88,6 @@
       outline: 2px solid #333;
     }
 
-    /* 입력 박스(글 작성칸) */
     .comment-box {
       flex: 1;
       height: 50px;
@@ -105,26 +97,24 @@
       box-sizing: border-box;
       text-align: left;
       border: 1px solid #ccc;
-      border-radius: 8px; /* 모서리 라운딩 */
+      border-radius: 8px;
     }
     .comment-box::placeholder {
       font-size: 1rem;
     }
 
-    /* 전송 버튼(Apple 파란색 느낌) */
     #submit-btn {
       font-size: 1.4rem;
       margin-top: 0;
       cursor: pointer;
-      background: #007aff; /* 애플 느낌 파랑 */
+      background: #007aff; 
       color: #fff;
       border: none;
       padding: 0.4rem 0.8rem;
       line-height: 1;
-      border-radius: 16px; /* 둥근 모서리 */
+      border-radius: 16px; 
     }
 
-    /* 밈 결과 */
     #meme-result {
       margin-top: 0.4rem;
     }
@@ -139,14 +129,12 @@
 
         <div class="comment-row">
           <div class="profile-area">
-            <!-- 기본: pepe.jpg -->
             <img id="profile-img" 
                  src="images/pepe.jpg" 
                  alt="Profile Image" 
                  class="profile-img">
             <button type="button" id="char-dropdown-btn">&#9660;</button>
 
-            <!-- 드롭다운 -->
             <div id="char-dropdown-menu" class="dropdown-menu">
               <img src="images/pepe.jpg"   class="char-option" data-img="images/pepe.jpg" alt="pepe">
               <img src="images/cheems.jpg" class="char-option" data-img="images/cheems.jpg" alt="cheems">
@@ -170,7 +158,6 @@
   </div>
 
   <script>
-    /* Vercel 서버리스 함수 */
     const BACKEND_URL = "https://nodejs-serverless-function-express-eight-navy.vercel.app/api/summarize-and-search.js";
 
     const sentenceForm = document.getElementById("sentence-form");
@@ -182,12 +169,10 @@
     const submitBtn = document.getElementById("submit-btn");
     const memeResultDiv = document.getElementById("meme-result");
 
-    // 드롭다운 토글
     charDropdownBtn.addEventListener("click", () => {
       charDropdownMenu.classList.toggle("active");
     });
 
-    // 캐릭터 선택 -> 프로필 변경
     charOptions.forEach(option => {
       option.addEventListener("click", () => {
         const newImg = option.getAttribute("data-img");
@@ -196,7 +181,6 @@
       });
     });
 
-    // Enter -> 전송
     sentenceInput.addEventListener("keydown", (e) => {
       if(e.key === "Enter"){
         e.preventDefault();
@@ -204,7 +188,6 @@
       }
     });
 
-    // 버튼 클릭 -> 전송
     submitBtn.addEventListener("click", generateMeme);
 
     async function generateMeme(){
@@ -232,7 +215,6 @@
           return;
         }
 
-        // 밈 이미지 표시
         const { imageUrl } = data;
         sentenceForm.style.display = "none";
         memeResultDiv.innerHTML = `<img src="${imageUrl}" alt="Meme Image" style="max-width:400px;">`;
